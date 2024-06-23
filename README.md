@@ -3,6 +3,7 @@
 # Shapes Data Generation
 
 The original code of generation originates from the following paper:
+
 [Knowledge Elicitation Using Deep Metric Learning and Psychometric Testing](https://link.springer.com/chapter/10.1007/978-3-030-67661-2_10) by [Lu Yin](https://github.com/luuyin), Vlado Menkovski and Mykola Pechenizkiy
 
 We alterned the code to include the generation of a npy file of the individual images
