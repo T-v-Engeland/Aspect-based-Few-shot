@@ -1,6 +1,10 @@
 # Aspect-based-Few-shot
 
-# Shapes Data Generation
+We generalize the formulation of few-shot learning by introducing the concept of an aspect. In the traditional formulation of few-shot learning, there is an underlying assumption that a single \"true\" label defines the content of each data point. This label serves as a basis for the comparison between the query object and the objects in the support set. However, when a human expert is asked to implement the same task without being given a predefined set of labels, they typically consider the rest of the data points in the support set as context. This context helps to understand at which level of abstraction and from which aspect to implement the comparison. In this work, we introduce a novel architecture and training procedure that develops a context given the query and support set and implements aspect-based few-shot learning that is not limited to a predetermined set of classes. We demonstrate that our method is capable of forming and using an aspect for few-shot learning on the Geometrics Shapes and Sprites dataset. The results validate the feasibility of our approach compared to traditional few-shot learning.
+
+The paper will be linked when done. Currently, the master thesis itself is included in the repo.
+
+## Shapes Data Generation
 
 The original code of generation originates from the following paper:
 
@@ -8,7 +12,7 @@ The original code of generation originates from the following paper:
 
 We alterned the code to include the generation of a npy file of the individual images
 
-# Sprites Data Generation
+## Sprites Data Generation
 
 The original code of generation originates from the following paper:
 
@@ -25,21 +29,19 @@ The sprite sheets are collected from the following open-source projects:
 We do NOT claim the ownership of the original sprite sheets. But if you will be using the code in this repo to generate the single frame sprite data, then consider citing the two original open-source projects, and our paper.
 
 ## Create the dataset
-You need to install python packages [Pillow](https://pillow.readthedocs.io/) and [imageio](https://imageio.github.io) first. Using pip should be sufficient.
+Clone the repo to your working directory. Then first run
 
-Then clone the repo to your working directory. Then first run
-
-    python random_character.py
+    python data/Sprites/character_generation.py
     
-This will create frames/ folder and generate .png files of 1296 unique characters with different actions.
+This will create a folder and generate .png files of 72000 unique characters with different features. It will also turn a generate numpy data file .npy
 
-Then run
+Then run each cell in the python notebook
 
-    python frame_to_npy.py
+    data/Shapes/Creat_simple.ipynb
     
-This will read the .png files in frames/, create path npy/, and generate numpy data files .npy.
+This will again create a folder and generate .png files of 3072 unique shapes with different features. It will also turn a generate numpy data file .npy
 
-After that if you don't want to retain the .png files, simply run
+## Run training and testing
 
-    rm -rf frames/
+The notebook "Training and Testing".ipynb contain the training of the model with the respective experiments
     
