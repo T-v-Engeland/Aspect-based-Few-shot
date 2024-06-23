@@ -19,6 +19,7 @@ We altered the code to only include single frames rather than a sequence of fram
 The sprite sheets are collected from the following open-source projects:
 
 [Liberated Pixel Cup](http://lpc.opengameart.org)
+
 [Universal-LPC-spritesheet](https://github.com/sanderfrenken/Universal-LPC-Spritesheet-Character-Generator)
 
 We do NOT claim the ownership of the original sprite sheets. But if you will be using the code in this repo to generate the single frame sprite data, then consider citing the two original open-source projects, and our paper.
