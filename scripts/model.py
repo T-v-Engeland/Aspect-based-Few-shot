@@ -193,16 +193,16 @@ class AspectBasedModel(nn.Module):
         anchor_x, support_x = self.context_model(anchor_x, support_x)
         
         if type(self.fsl) == ContextIdentity:
-          return anchor_x, support_x
+            return anchor_x, support_x
         
         else:
-          output = torch.zeros((batch_size, support_size), device = self.device)
+            output = torch.zeros((batch_size, support_size), device = self.device)
         
-          for i in range(support_size):
-            output[:, i:i+1] = self.fsl(anchor_x, support_x[:,i])
+            for i in range(support_size):
+                output[:, i:i+1] = self.fsl(anchor_x, support_x[:,i])
         
-          output = F.softmax(output, dim = 1)
-          return output
+            output = F.softmax(output, dim = 1)
+            return output
     
     
     
@@ -263,11 +263,11 @@ class DeepSetTraversalModule(nn.Module):
         support_x_deep_set = torch.zeros(*support.shape, device = self.device)
         
         for i in range(support_size):
-          mask = torch.ones(support_size, dtype=bool)
-          mask[i] = False
-          sum_tensor = support_x[:, mask].sum(dim=1)
-          concatenation = torch.concat([support[:,i], sum_tensor], dim=1)
-          support_x_deep_set[:, i:i+1] = self.perm_equi(concatenation)[:,None,:,:,:]
+            mask = torch.ones(support_size, dtype=bool)
+            mask[i] = False
+            sum_tensor = support_x[:, mask].sum(dim=1)
+            concatenation = torch.concat([support[:,i], sum_tensor], dim=1)
+            support_x_deep_set[:, i:i+1] = self.perm_equi(concatenation)[:,None,:,:,:]
         
         support_x_deep_set = torch.mean(support_x_deep_set, dim=1)
         projector = self.projector(support_x_deep_set)
@@ -276,7 +276,7 @@ class DeepSetTraversalModule(nn.Module):
         support_x_reshape_m = torch.zeros(*support_x_reshape.shape, device=self.device)
         
         for i in range(support_size):
-          support_x_reshape_m[:, i:i+1] = torch.mul(support_x_reshape[:, i], projector)[:, None, :, :, :]
+            support_x_reshape_m[:, i:i+1] = torch.mul(support_x_reshape[:, i], projector)[:, None, :, :, :]
         
         return anchor_x, support_x_reshape_m
     
@@ -327,11 +327,11 @@ class DeepSetTraversalModuleResnet(nn.Module):
         support_x_deep_set = torch.zeros(*support.shape, device = self.device)
         
         for i in range(support_size):
-          mask = torch.ones(support_size, dtype=bool)
-          mask[i] = False
-          sum_tensor = support_x[:, mask].sum(dim=1)
-          concatenation = torch.concat([support[:,i], sum_tensor], dim=1)
-          support_x_deep_set[:, i:i+1] = self.perm_equi(concatenation)[:,None,:,:,:]
+            mask = torch.ones(support_size, dtype=bool)
+            mask[i] = False
+            sum_tensor = support_x[:, mask].sum(dim=1)
+            concatenation = torch.concat([support[:,i], sum_tensor], dim=1)
+            support_x_deep_set[:, i:i+1] = self.perm_equi(concatenation)[:,None,:,:,:]
         
         support_x_deep_set = torch.mean(support_x_deep_set, dim=1)
         projector = self.projector(support_x_deep_set)
@@ -340,33 +340,33 @@ class DeepSetTraversalModuleResnet(nn.Module):
         support_x_reshape_m = torch.zeros(*support_x_reshape.shape, device=self.device)
         
         for i in range(support_size):
-          support_x_reshape_m[:, i:i+1] = torch.mul(support_x_reshape[:, i], projector)[:, None, :, :, :]
+            support_x_reshape_m[:, i:i+1] = torch.mul(support_x_reshape[:, i], projector)[:, None, :, :, :]
         
         return anchor_x, support_x_reshape_m
     
     @property
     def device(self):
-    return next(self.parameters()).device
+        return next(self.parameters()).device
     
     def _make_layer(self, block, planes, blocks, stride=1, last = nn.ReLU()):
-    downsample = None
-    if stride != 1 or self.inplanes != planes:
-    
-        downsample = nn.Sequential(
-            nn.Conv2d(self.inplanes, planes, kernel_size=1, stride=stride),
-            nn.BatchNorm2d(planes),
-        )
-    layers = []
-    if blocks == 1:
-        layers.append(block(self.inplanes, planes, stride, downsample, last=last))
-        self.inplanes = planes
-    else:
-        layers.append(block(self.inplanes, planes, stride, downsample))
-        self.inplanes = planes
-        for i in range(1, blocks):
-            if i == blocks-1:
-                layers.append(block(self.inplanes, planes, last=last))
-            else:
-                layers.append(block(self.inplanes, planes))
-    
-    return nn.Sequential(*layers)
+        downsample = None
+        if stride != 1 or self.inplanes != planes:
+        
+            downsample = nn.Sequential(
+                nn.Conv2d(self.inplanes, planes, kernel_size=1, stride=stride),
+                nn.BatchNorm2d(planes),
+            )
+        layers = []
+        if blocks == 1:
+            layers.append(block(self.inplanes, planes, stride, downsample, last=last))
+            self.inplanes = planes
+        else:
+            layers.append(block(self.inplanes, planes, stride, downsample))
+            self.inplanes = planes
+            for i in range(1, blocks):
+                if i == blocks-1:
+                    layers.append(block(self.inplanes, planes, last=last))
+                else:
+                    layers.append(block(self.inplanes, planes))
+        
+        return nn.Sequential(*layers)
