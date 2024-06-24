@@ -3,14 +3,24 @@ import numpy as np
 from numpy import *
 import torch
 import torchvision.transforms as transforms
+import pandas as pd
 
 class QuerySplit(Dataset):
-  def __init__(self, df, df_complete, data, same_aspect, data_queries = None, transform = None, support_size = 4, img_size = 112):
+  '''
+  This class allows for the query split of the data
+  '''
+  
+  def __init__(self, df: pd.DataFrame, df_complete: pd.DataFrame, data: np.ndarray, same_aspect: list, 
+               data_queries: np.ndarray = None, transform: transforms.Compose = None, support_size: int = 4, 
+               img_size: int = 112):
     self.df = df
     self.df_complete = df_complete
     self.data = data
     self.data_queries = data_queries
+
+    # Create a dictionary of each aspect presented in the data
     self.aspects = self.find_aspects()
+    
     self.columns = list(self.df.columns)
     self.transform = transform
     self.num_same = len(same_aspect)
@@ -21,12 +31,30 @@ class QuerySplit(Dataset):
   def __len__(self):
     return len(self.df)
 
-  def find_aspects(self):
+  def find_aspects(self) -> dict:
+    '''
+    This function extracts the unique aspects presented in the data
+
+    Returns:
+        dict: dictionary with the unique aspects for each feature of the data
+    '''
+    
     df_without_image = self.df_complete.iloc[:, :]
     aspects = df_without_image.apply(lambda col: list(col.unique())).to_dict()
     return aspects
 
-  def __getitem__(self, idx):
+  def __getitem__(self, idx: int) -> tuple[torch.Tensor, dict]:
+    '''
+    This function returns a query image with the respective support sets
+
+    Args:
+        idx (int): An index where 0 <= idx < len(self)
+
+    Returns:
+        torch.Tensor: The query image
+        dict: A dictionary containing the support sets with the information of the correct match
+    '''
+    
     anchor_aspects = list(self.df.values[:, :][idx])
     anchor = self.data_queries[idx]
 
@@ -50,7 +78,20 @@ class QuerySplit(Dataset):
 
     return anc, my_vars
 
-  def get_support(self, anchor_aspects_dict, same_anchor):
+  def get_support(self, anchor_aspects_dict: dict, same_anchor: str) -> tuple[list, np.ndarray, dict]:
+    '''
+    This function finds a random support set
+
+    Args:
+        anchor_aspects_dict (dict): The features of the support set image that matches the query
+        same_anchor (str): The aspect of the support set
+
+    Returns:
+        list: The indexes in the data of the support set images
+        np.ndarray: The index of the matching image
+        dict: The features of the next support set image that matches the query
+    '''
+    
     place = random.choice(range(self.support_size), size = self.support_size-1, replace=False)
 
     possible_choices = [value for value in self.aspects[same_anchor] if value != anchor_aspects_dict[same_anchor]]
@@ -77,7 +118,17 @@ class QuerySplit(Dataset):
 
     return images, Y, new
 
-  def index_to_tensor(self, indexes):
+  def index_to_tensor(self, indexes: list) -> torch.Tensor:
+    '''
+    This function finds the corresponding images based on the index
+
+    Args:
+        indexes (list): A list of the indexes corresponding with images
+
+    Returns:
+        torch.Tensor: A Tensor containing the images of the support set
+    '''
+    
     image_tensor = torch.zeros((self.support_size, 3, self.img_size, self.img_size))
 
     for i, index in enumerate(indexes):
@@ -86,7 +137,17 @@ class QuerySplit(Dataset):
 
     return image_tensor
 
-  def find_image(self, params):
+  def find_image(self, params: list) -> int:
+    '''
+    This function finds the index based on the values of the features
+
+    Args:
+        params (list): A list with the feature values
+
+    Returns:
+        int: The index
+    '''
+    
     copy_df = self.df_complete.copy()
     columns = list(copy_df.columns)
     for i, value in enumerate(params):
@@ -95,7 +156,17 @@ class QuerySplit(Dataset):
 
     return copy_df.index[0]
 
-  def read_img(self, image):
+  def read_img(self, image: np.ndarray) -> torch.Tensor:
+    '''
+    This function transforms the numpy array to a torch Tensor
+
+    Args:
+        image (np.ndarray): A numpy array representing the image
+
+    Returns:
+        torch.Tensor: A torch Tensor representing the image
+    '''
+   
     if self.transform:
       image = self.transform(image)
     return image
