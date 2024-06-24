@@ -40,6 +40,8 @@ class QuerySplit(Dataset):
     '''
     
     df_without_image = self.df_complete.iloc[:, :]
+
+    # Create the dictionary of each features with unique values
     aspects = df_without_image.apply(lambda col: list(col.unique())).to_dict()
     return aspects
 
@@ -54,7 +56,8 @@ class QuerySplit(Dataset):
         torch.Tensor: The query image
         dict: A dictionary containing the support sets with the information of the correct match
     '''
-    
+
+    # Find the features of query
     anchor_aspects = list(self.df.values[:, :][idx])
     anchor = self.data_queries[idx]
 
